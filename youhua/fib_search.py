@@ -55,5 +55,6 @@ def solve(a, b, ep):
         else:
             b = la_n
     print(f"第{k+1}次迭代:a={a},b={b}")
-
+    print(f"最小值点{(a+b)/2}")
+    print(f"最小值{f((a+b)/2)}")
 solve(0,1,0.15)
