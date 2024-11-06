@@ -60,16 +60,16 @@ def Kmeans(X, K, init_centroids):
 
     return centroids, cluster, loss_history
 
+if __name__ == "__main__":
+    K = 4
+    init_centroids = random_init(X, K)
+    cent, cluster, loss_history = Kmeans(X, K, init_centroids)
+    x = range(0,len(loss_history))
+    y = loss_history
 
-K = 4
-init_centroids = random_init(X, K)
-cent, cluster, loss_history = Kmeans(X, K, init_centroids)
-x = range(0,len(loss_history))
-y = loss_history
-
-fig, ax = plt.subplots()
-ax.plot(x, y, label='Loss', color='blue', linewidth=2)
-ax.set_xlabel("Iter")
-ax.set_ylabel("Loss")
-ax.legend()
-plt.show()
+    fig, ax = plt.subplots()
+    ax.plot(x, y, label='Loss', color='blue', linewidth=2)
+    ax.set_xlabel("Iter")
+    ax.set_ylabel("Loss")
+    ax.legend()
+    plt.show()
