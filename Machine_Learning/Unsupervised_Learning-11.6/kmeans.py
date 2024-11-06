@@ -39,23 +39,37 @@ def Kmeans(X, K, init_centroids):
     cluster = np.zeros(len(X), dtype=int)
     changed = True    
     itr = 0 # 开始迭代
+    loss_history = []
     
     while changed:
         changed = False
+        loss = 0
         for i, data in enumerate(X):
             dis = np.sum((centroids - data) ** 2, axis=-1)
             k = np.argmin(dis)
             if cluster[i] != k:
                 cluster[i] = k
                 changed = True
+            loss += 0.5 * np.sum((data - centroids[k]) ** 2)
+        loss_history.append(loss)
         show_cluster(X, cluster, centroids)
         for i in range(K):
             centroids[i] = np.mean(X[cluster == i], axis=0)
         itr += 1
+        print(f"第{itr}次迭代:loss={loss}")
 
-    return centroids, cluster
+    return centroids, cluster, loss_history
 
 
 K = 4
 init_centroids = random_init(X, K)
-cent, cluster = Kmeans(X, K, init_centroids)
+cent, cluster, loss_history = Kmeans(X, K, init_centroids)
+x = range(0,len(loss_history))
+y = loss_history
+
+fig, ax = plt.subplots()
+ax.plot(x, y, label='Loss', color='blue', linewidth=2)
+ax.set_xlabel("Iter")
+ax.set_ylabel("Loss")
+ax.legend()
+plt.show()
