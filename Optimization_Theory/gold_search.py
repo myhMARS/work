@@ -2,8 +2,9 @@ import numpy as np
 
 r = 0.618
 
+
 def f(x):
-    return np.exp(-x) + x**2
+    return np.exp(-x) + x ** 2
 
 
 def solve(a, b, l):
@@ -27,6 +28,8 @@ def solve(a, b, l):
         k += 1
 
     print(f"第{k}次迭代:la={la},mu={mu}")
-    print(f"最小值点:{(a+b)/2:.3f}")
-    print(f"最小值:{f((a+b)/2):.3f}")
-solve(0,1,0.2)
+    print(f"最小值点:{(a + b) / 2:.3f}")
+    print(f"最小值:{f((a + b) / 2):.3f}")
+
+
+solve(0, 1, 0.2)
