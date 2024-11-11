@@ -99,4 +99,3 @@ if __name__ == "__main__":
     plt.ylabel("Loss")
     plt.legend()
     plt.show()
-
