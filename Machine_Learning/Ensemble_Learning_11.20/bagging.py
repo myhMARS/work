@@ -28,7 +28,7 @@ class BaggingForest:
     def fit(self, X, y):
         self.n_samples, self.n_features = X.shape
         self.n_classes = np.unique(y).shape[0]
-        
+
         for tree in self.trees:
             sample_idx =  self.bootstrap()
             tree.fit(X[sample_idx], y[sample_idx])
@@ -41,7 +41,7 @@ class BaggingForest:
     def predict_proba(self, X):
         ensemble = np.mean([tree.predict_proba(X) for tree in self.trees], axis=0)
         return ensemble
-    
+
 
     def score(self, X, y):
         return np.mean(y == self.predict(X))
