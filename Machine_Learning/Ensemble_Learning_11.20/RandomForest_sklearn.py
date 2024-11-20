@@ -1,5 +1,5 @@
-from sklearn.ensemble import BaggingClassifier, RandomForestClassifier
 from sklearn.datasets import make_classification
+from sklearn.ensemble import BaggingClassifier, RandomForestClassifier
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 

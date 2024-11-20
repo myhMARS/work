@@ -1,11 +1,11 @@
-from matplotlib.lines import lineStyles
+import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.datasets import make_classification
-from sklearn.tree  import DecisionTreeClassifier
-from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
-from tqdm import tqdm
-from matplotlib import pyplot as plt 
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier
+
+from show import show
 
 
 class BaggingForest:
@@ -13,29 +13,23 @@ class BaggingForest:
         self.n_tree = n_tree
         self.trees = [
             DecisionTreeClassifier(
-            criterion='gini', 
-            max_depth=3, 
-            min_samples_split=5) 
+                criterion='gini',
+                max_depth=3,
+                min_samples_split=5)
             for _ in range(n_tree)
         ]
-        self.n_samples = 0
-        self.n_features = 0
-        self.n_classes = 0
 
-
-    def bootstrap(self):
-        sample_idx = np.random.randint(0, self.n_samples, self.n_samples)
+    @staticmethod
+    def bootstrap(n_samples):
+        sample_idx = np.random.randint(0, n_samples, n_samples)
         return sample_idx
 
-
     def fit(self, X, y):
-        self.n_samples, self.n_features = X.shape
-        self.n_classes = np.unique(y).shape[0]
+        n_samples, n_features = X.shape
 
         for tree in self.trees:
-            sample_idx =  self.bootstrap()
+            sample_idx = self.bootstrap(n_samples=n_samples)
             tree.fit(X[sample_idx], y[sample_idx])
-
 
     def predict(self, X):
         proba = self.predict_proba(X)
@@ -45,13 +39,12 @@ class BaggingForest:
         ensemble = np.mean([tree.predict_proba(X) for tree in self.trees], axis=0)
         return ensemble
 
-
     def score(self, X, y):
         return np.mean(y == self.predict(X))
 
 
 if __name__ == "__main__":
-    X,y = make_classification(
+    X, y = make_classification(
         n_samples=1000,  # 数据集大小
         n_features=16,  # 数据特征数
         n_informative=5,  # 有效特征数
@@ -72,41 +65,10 @@ if __name__ == "__main__":
     accuracy2 = bf.score(X_test, y_test)
     print('accuracy1', accuracy1)
     print('accuracy2', accuracy2)
-
-    num_trees = np.arange(1, 101, 5)
-    np.random.seed(0)
-    plt.figure
-    
-    test_score = []
-    train_score = []
-
-    with tqdm(num_trees) as pbar:
-        for n_tree in pbar:
-            bf = BaggingForest(n_tree=n_tree)
-            bf.fit(X_train, y_train)
-            train_score.append(bf.score(X_train, y_train))
-            bf.fit(X_test, y_test)
-            test_score.append(bf.score(X_test, y_test))
-            pbar.set_postfix({
-                'n_tree': n_tree,
-                'train_score': train_score[-1],
-                'test_score': test_score[-1]
-            })
-    plt.plot(
-        num_trees,
-        train_score,
-        color='blue',
-        label = 'bagging_train_score'
-        )
-    plt.plot(
-        num_trees,
-        test_score,
-        color='blue',
-        linestyle='-.',
-        label='bagging_test_score'
-        )
-    plt.ylabel = 'Score'
-    plt.xlabel = 'Number of tree'
-    plt.legend()
-    plt.show()
-
+    ax, fig = plt.subplots(1)
+    show(lambda n_tree: BaggingForest(n_tree=n_tree),
+         'Bagging Forest',
+         X_train, X_test, y_train, y_test,
+         ax,
+         'blue',
+         '-')
