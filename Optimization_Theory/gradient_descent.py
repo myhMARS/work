@@ -1,16 +1,14 @@
 import math
-import numpy as np
 from sympy import symbols, diff, solve
-
 
 x1, x2 = symbols('x1 x2')
 
-f =2 * (x1 ** 2) + x2 ** 2
+f = (x1 - 2) ** 2 + 4 * (x2 - 3) ** 2
 
 grad1 = diff(f, x1)
 grad2 = diff(f, x2)
-x1_value = 1
-x2_value = 1
+x1_value = 0
+x2_value = 0
 
 epsilon = 0.1
 max_iter = 100
@@ -45,4 +43,8 @@ while True:
     x2_value -= grad2_value * t_value
     iter_count += 1
 
-    print(f'iter:{iter_count}, min_porint:({x1_value}, {x2_value}), func_num:{f.subs({x1: x1_value,x2: x2_value})}')
+    print(f'''
+    iter:{iter_count}, 
+    min_porint:({x1_value}, {x2_value}), 
+    func_num:{f.subs({x1: x1_value,x2: x2_value})}
+    ''')
