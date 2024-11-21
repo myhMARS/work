@@ -23,7 +23,7 @@ while True:
         x1: x1_value,
         x2: x2_value
     }).evalf()
-    
+
     if math.sqrt(grad1_value ** 2 + grad2_value ** 2) < epsilon:
         break
 
