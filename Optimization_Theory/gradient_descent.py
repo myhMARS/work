@@ -31,7 +31,6 @@ while True:
     x1_updated = x1_value - grad1_value * t
     x2_updated = x2_value - grad2_value * t
 
-
     f_updated = f.subs({
         x1: x1_updated,
         x2: x2_updated
@@ -46,5 +45,5 @@ while True:
     print(f'''
     iter:{iter_count}, 
     min_porint:({x1_value}, {x2_value}), 
-    func_num:{f.subs({x1: x1_value,x2: x2_value})}
+    func_num:{f.subs({x1: x1_value, x2: x2_value})}
     ''')
