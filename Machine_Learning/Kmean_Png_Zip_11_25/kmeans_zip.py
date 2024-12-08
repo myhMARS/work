@@ -4,9 +4,9 @@ from sklearn.cluster import KMeans
 from skimage.io import imread, imsave
 import os
 
-image_path = 'img.jpg'  # 替换为你的图像路径
+image_path = 'img.bmp'
 image = imread(image_path)
-# imsave('r_image.jpg', image)
+# imsave('r_image.bmp', image)
 image = image / 255.0
 
 # original_shape = image.shape
@@ -49,13 +49,13 @@ for n in range(5, 100, 5):
     # plt.tight_layout()
     # plt.show()
 
-    zip_image_path = 'zip_image.jpg'
+    zip_image_path = 'zip_image.bmp'
     imsave(zip_image_path, zip_image, as_gray=True)
-    compressed_image_path = 'reconstructed_image.jpg'
+    compressed_image_path = 'reconstructed_image.bmp'
     imsave(compressed_image_path, (reconstructed_image * 255).astype(np.uint8))
-    zips.append(os.stat('zip_image.jpg').st_size)
-    restructed.append(os.stat('reconstructed_image.jpg').st_size)
-plt.plot(x, [os.stat('img.jpg').st_size] * len(x), label='Original Image Size',linestyle='-')
+    zips.append(os.stat('zip_image.bmp').st_size)
+    restructed.append(os.stat('reconstructed_image.bmp').st_size)
+plt.plot(x, [os.stat('img.bmp').st_size] * len(x), label='Original Image Size',linestyle='-')
 plt.plot(x, zips, label='Zip Image Size',linestyle='-.')
 plt.plot(x, restructed, label='Reconstructed Image Size',linestyle='--')
 plt.xlabel('K of kmeans')
