@@ -67,12 +67,12 @@ if __name__ == "__main__":
 
     mlp = MLP(2, 12, 6 ,1)
 
-    learning_rate = 0.5
+    learning_rate = 0.15
     epochs = 10000
 
     for epoch in range(epochs):
         mlp.fit(X,y,learning_rate)
-        if epoch % 100 == 0:
+        if (epoch + 1) % 100 == 0:
             total_loss = 0
             current_num = 0
             for i in range(len(X)):
@@ -81,5 +81,5 @@ if __name__ == "__main__":
                 loss = -(y_sample * np.log(output) + (1 - y_sample) * np.log(1 - output))
                 current_num += (np.round(output) == y_sample)
                 total_loss += loss
-            print(f'Epoch {epoch}: Loss:{total_loss / len(X)}, Acc = {current_num / len(X)}')
+            print(f'Epoch {epoch + 1}: Loss:{total_loss / len(X)}, Acc = {current_num / len(X)}')
     
