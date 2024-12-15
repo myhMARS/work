@@ -1,29 +1,32 @@
 import numpy as np
-from scipy.linalg import solve_continuous_are
+from scipy.linalg import solve_continuous_lyapunov, eigvals
 
-def lyapunov_stability(A):
-    """
-    使用李亚普诺夫方程求解P矩阵并判断系统稳定性
-    :param A: 系统矩阵 A (n x n)
-    :return: 系统稳定性结论
-    """
-    # 选择正定矩阵 Q, 这里我们选择单位矩阵 I
-    Q = np.eye(A.shape[0])
-    
-    # 使用 SciPy 的 solve_continuous_are 函数求解李亚普诺夫方程
-    P = solve_continuous_are(A, np.zeros(A.shape), Q, np.eye(A.shape[0]))
+# 定义系统矩阵 A
+A = np.array([[0, 1],
+              [-1, -1]])
 
-    # 判断 P 是否正定，即其特征值是否全为正
-    eigenvalues_P = np.linalg.eigvals(P)
-    
-    if np.all(eigenvalues_P > 0):
-        return "系统是渐近稳定的"
-    else:
-        return "系统是不稳定的"
+# 定义正定矩阵 Q
+Q = np.eye(2)  # 选择单位矩阵 Q
 
-# 示例：定义系统矩阵 A
-A = np.array([[0, 1], [-1, -1]])
+# 求解李雅普诺夫方程 A^T P + P A = -Q
+P = solve_continuous_lyapunov(A.T, -Q)
+print("P 矩阵为：\n", P)
 
-# 使用李亚普诺夫方程判断系统稳定性
-stability = lyapunov_stability(A)
-print(stability)
+eig_P = np.linalg.eigvals(P)
+print("P 的特征值为：", eig_P)
+
+if np.all(eig_P > 0):
+    print("方法一：P 矩阵是正定的 (所有特征值 > 0)")
+else:
+    print("方法一：P 矩阵不是正定的 (存在特征值 <= 0)")
+
+det1 = P[0, 0]
+det2 = np.linalg.det(P)
+
+print("P 的第一个主子矩阵的行列式 (det1):", det1)
+print("P 的整个矩阵的行列式 (det2):", det2)
+
+if det1 > 0 and det2 > 0:
+    print("方法二：P 矩阵是正定的 (希尔维斯特判据成立)")
+else:
+    print("方法二：P 矩阵不是正定的 (希尔维斯特判据不成立)")

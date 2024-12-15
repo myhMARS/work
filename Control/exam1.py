@@ -1,5 +1,6 @@
 import numpy as np
 
+
 def check_controllability(A, B):
     """
     检查系统能控性
@@ -8,10 +9,11 @@ def check_controllability(A, B):
     controllability_matrix = B
     for i in range(1, n):
         controllability_matrix = np.hstack((controllability_matrix, np.linalg.matrix_power(A, i) @ B))
-    
+
     rank = np.linalg.matrix_rank(controllability_matrix)
     is_controllable = rank == n
     return is_controllable, controllability_matrix, rank
+
 
 def check_observability(A, C):
     """
@@ -21,15 +23,16 @@ def check_observability(A, C):
     observability_matrix = C
     for i in range(1, n):
         observability_matrix = np.vstack((observability_matrix, C @ np.linalg.matrix_power(A, i)))
-    
+
     rank = np.linalg.matrix_rank(observability_matrix)
     is_observable = rank == n
     return is_observable, observability_matrix, rank
 
+
 # 示例：定义系统
 A = np.array([[-3, 1], [1, -3]])
-B = np.array([[1,1], [1,1]])
-C = np.array([[1, 1],[1, -1 ]])
+B = np.array([[1, 1], [1, 1]])
+C = np.array([[1, 1], [1, -1]])
 
 # 检查能控性
 controllable, C_matrix, C_rank = check_controllability(A, B)
