@@ -1,5 +1,4 @@
 import os
-import sys
 import time
 import random
 from rich.progress import Progress, TextColumn, BarColumn, TimeRemainingColumn, TimeElapsedColumn
@@ -25,7 +24,8 @@ SIMILARITY_THRESHOLD = 10
 
 
 def check_ellipe(ellipe):
-    return B_MIN <= ellipe[1][0] <= B_MAX and A_MIN <= ellipe[1][1] <= A_MAX
+    return min(B_MIN, B_MAX) <= ellipe[1][0] <= max(B_MIN, B_MAX) and min(A_MIN, A_MAX) <= ellipe[1][1] <= max(A_MIN,
+                                                                                                               A_MAX)
 
 
 def get_overlap_percent(image, ellipe, contours, thickness=1):
@@ -169,31 +169,21 @@ def set_limit(source):
 
 
 def detect_ellipses(source_file, debug=False, save=False):
-    # global A_MIN, A_MAX, B_MIN, B_MAX, angle_init
     start_time = time.time()
 
     # 加载图像
     source = cv2.imread(source_file)
-    # height, width = source.shape[:2]
-    # source = cv2.resize(source, (width * 2, height * 2), interpolation=cv2.INTER_LINEAR)
 
     # 转换为灰度图像
     img_gray = cv2.cvtColor(source, cv2.COLOR_BGR2GRAY)
     img_gray = cv2.GaussianBlur(img_gray, (9, 9), 0)
-    img_gray = cv2.medianBlur(img_gray, 5)  # 11
+    img_gray = cv2.medianBlur(img_gray, 5)
     # cv2.imshow('median', img_gray)
     # cv2.waitKey(0)
-    binary = cv2.adaptiveThreshold(src=img_gray, maxValue=255, adaptiveMethod=cv2.ADAPTIVE_THRESH_MEAN_C,
-                                   thresholdType=cv2.THRESH_BINARY, blockSize=11, C=1)
+    # binary = cv2.adaptiveThreshold(src=img_gray, maxValue=255, adaptiveMethod=cv2.ADAPTIVE_THRESH_MEAN_C,
+    #                                thresholdType=cv2.THRESH_BINARY, blockSize=11, C=1)
     # binary = cv2.medianBlur(binary, 11)
-    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
-    binary = cv2.morphologyEx(binary, cv2.MORPH_OPEN, kernel)
-    # kernel = np.ones((3, 3), np.uint8)
-    # binary = cv2.dilate(binary, kernel, iterations=3)
-    # binary = cv2.erode(binary, kernel, iterations=1)
-    edges = cv2.Canny(binary, 50, 150)
-    # edges = cv2.dilate(edges, kernel, iterations=2)
-    # edges = cv2.erode(edges, kernel, iterations=2)
+    edges = cv2.Canny(img_gray, 50, 150)
     contours, _ = cv2.findContours(edges, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
     img = np.zeros_like(img_gray)
     cv2.drawContours(img, contours, -1, (255, 255, 255), 1)
@@ -210,10 +200,6 @@ def detect_ellipses(source_file, debug=False, save=False):
     edge_points = np.column_stack(np.where(edges == 255))
 
     print(len(edge_points))
-    # inverted_img = cv2.bitwise_not(binary)
-    # cv2.imshow('img', inverted_img)
-    # cv2.moveWindow('img', 0, 0)
-    # cv2.waitKey(0)
     set_limit(source)
     iterations = 1000
     with Progress(TextColumn("[progress.description]{task.description}"),
@@ -226,13 +212,11 @@ def detect_ellipses(source_file, debug=False, save=False):
             progress.advance(running, advance=1)
             if len(contour) < 5:
                 continue
-            # print(contour)
             res_ell = None
             best_overlap = 0
             i = 0
             while i < iterations:
                 edge_points = random.sample(contour.reshape(-1, 2).tolist(), 5)
-                # 霍夫变换 https://github.com/opencv/opencv/blob/4.x/samples/cpp/fitellipse.cpp
                 # https://github.com/opencv/opencv/blob/d9a139f9e85a17b4c47dbca559ed90aef517c279/modules/imgproc/src/shapedescr.cpp#L504
                 ellipse = cv2.fitEllipse(np.array(edge_points))
                 i += 1
@@ -241,21 +225,15 @@ def detect_ellipses(source_file, debug=False, save=False):
                     if overlap > best_overlap:
                         best_overlap = overlap
                         res_ell = ellipse
-            # print(best_overlap)
 
             # 检查椭圆尺寸是否有效
             if res_ell and best_overlap > 0.6:
                 print(best_overlap)
-                # cv2.imshow('contour', contour_img)
-                # cv2.imshow('ellipse', img)
-                # cv2.imshow('overlap', overlap_img)
-                # cv2.waitKey(0)
                 ellipses.append([res_ell, best_overlap])
             else:
                 if debug:
                     print(f"Invalid ellipse dimensions: {ellipse}")
     cv2.waitKey(0)
-    # ellipses.append(res_ell)
 
     ellipses = similarity_ellipes(ellipses)
     end_time = time.time()
@@ -279,4 +257,4 @@ def detect_ellipses(source_file, debug=False, save=False):
     return data
 
 
-detect_ellipses('source/e1.PNG', debug=False, save=True)
+detect_ellipses('source/e6.png', debug=False, save=True)
